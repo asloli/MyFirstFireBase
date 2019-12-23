@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Firebase Authentication via Email</title>
+		<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.7.1/firebase.js"></script>
+		<script>
+			// Initialize Firebase
+			var config = {
+				apiKey: "AIzaSyAzmyKb0HKvgXDoSs1GqcnAlWsKK-2L-_M",
+				authDomain: "myfirstfirebase-89687.firebaseapp.com",
+				databaseURL: "https://myfirstfirebase-89687.firebaseio.com",
+				projectId: "myfirstfirebase-89687",
+				storageBucket: "myfirstfirebase-89687.appspot.com",
+				messagingSenderId: "316712640812",
+				appId: "1:316712640812:web:b3ca1e420a2c33e60a4c89",
+				measurementId: "G-5M70YFT3S0"
+			};
+			firebase.initializeApp(config);
+		</script>
+
+		<script>
+			$(document).ready(function(){  
+				$("#SignIn").click(function(){
+					var email		 = $('#email').val();
+					var password	= $('#pwd').val();
+
+					firebase.auth().signInWithEmailAndPassword(email, password).catch((error) => {
+						// Handle Errors here.
+						const errorCode = error.code;
+						const errorMessage = error.message;
+						// ...
+						alert(errorMessage)
+					})
+				});
+				var userLogin;
+				firebase.auth().onAuthStateChanged(function(user) {
+					if (user) {
+						userLogin = user;
+						alert("User is logined")
+					} else {
+						userLogin = null;
+						alert("User is not logined yet.");
+					}
+				});
+				$("#SignOut").click(function(){
+					firebase.auth().signOut().then(function() {
+						console.log("User sign out!");
+					}, function(error) {
+					console.log("User sign out error!");
+					})
+				});
+				$("#getUID").click(function(){
+					if (userLogin)
+						alert(userLogin['uid']);
+				});						 
+			});		 
+		</script>
+		<script>
+			//註冊
+			$(document).ready(function(){
+				$("#SignUp").click(function(){
+					var email         = $('#email').val();
+					var password    = $('#pwd').val();
+					firebase.auth().createUserWithEmailAndPassword(email, password).catch((error) => {
+					// Handle Errors here.
+						const errorCode = error.code;
+						const errorMessage = error.message;
+					// ...
+						alert(errorMessage)
+					}).then(function (error) { if (error.code != 400) alert("成功創建用戶認證！"); });
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<h1>Firebase身份驗證　通過電子郵件登錄</h1>
+
+		<input type="text" id="email"	  placeholder="Email"/>
+		<input type="text" id="pwd"	   placeholder="密碼"/>
+		<button id="SignUp">註冊</button><br><br>
+		<button id="SignIn">登入</button><br><br>
+		<button id="SignOut">登出</button><br><br>
+
+		<button id="getUID">取得UID</button><br><br>
+
+	</body>
+</html>
